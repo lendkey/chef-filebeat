@@ -5,8 +5,9 @@
 
 resource_name :filebeat_install
 
-property :version, String, default: '6.4.2'
+property :version, String, default: '6.6.2'
 property :release, String, default: '1'
+property :install_oss, [TrueClass, FalseClass], default: false
 property :setup_repo, [TrueClass, FalseClass], default: true
 property :ignore_package_version, [TrueClass, FalseClass], default: false
 property :service_name, String, default: 'filebeat'
@@ -27,6 +28,7 @@ action :create do
   new_resource.conf_dir = new_resource.conf_dir || default_config_dir(new_resource.version, new_resource.windows_base_dir)
   new_resource.prospectors_dir = new_resource.prospectors_dir || default_prospectors_dir(new_resource.conf_dir)
   new_resource.log_dir = new_resource.log_dir || default_log_dir(new_resource.conf_dir)
+  package_name = new_resource.install_oss ? 'filebeat-oss' : 'filebeat'
   version_string = %w[fedora rhel amazon].include?(node['platform_family']) ? "#{new_resource.version}-#{new_resource.release}" : new_resource.version
 
   with_run_context(:root) do
@@ -119,7 +121,7 @@ action :create do
       end
     end
 
-    package 'filebeat' do # ~FC009
+    package package_name do # ~FC009
       version version_string unless new_resource.ignore_package_version
       options new_resource.apt_options if new_resource.apt_options && node['platform_family'] == 'debian'
       notifies :restart, "service[#{new_resource.service_name}]" if new_resource.notify_restart && !new_resource.disable_service
@@ -143,13 +145,14 @@ action :create do
 end
 
 action :delete do
+  package_name = new_resource.install_oss ? 'filebeat-oss' : 'filebeat'
   with_run_context(:root) do
     edit_resource(:service, new_resource.service_name) do
       action :stop, :disable
     end
   end
 
-  package 'filebeat' do
+  package package_name do
     action :remove
   end
 

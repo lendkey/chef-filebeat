@@ -6,6 +6,10 @@ filebeat CHANGELOG
 
 - Piotr Kantyka - Added property for prefix in prospector yaml filename
 
+- Chris Ferry - Added oss package support
+
+- Chris Ferry - Updated filebeat version to v6.6.2
+
 2.2.0
 -----
 
