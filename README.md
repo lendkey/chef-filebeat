@@ -160,7 +160,6 @@ LWRP `filebeat_config` creates filebeat configuration yaml file `/etc/filebeat/f
 
 Below filebeat configuration parameters gets overwritten by the LWRP.
 
-- `filebeat.registry_file`
 - `filebeat.config_dir`
 - `logging.files`
 
@@ -195,7 +194,6 @@ logging.files:
 output.elasticsearch:
   hosts:
   - 127.0.0.1:9200
-filebeat.registry_file: "/var/lib/filebeat/registry"
 filebeat.config_dir: "/etc/filebeat/conf.d"
 ```
 
